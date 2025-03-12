@@ -1,11 +1,10 @@
 import React from "react"
+import ClaudeRecipe from "./ClaudeRecipe"
+import IngredientsList from "./IngredientsList"
 
 export default function Main(){
     const [ingredients, setIngredients] = React.useState([])
-
-    const ingredientsListItems =  ingredients.map((ingredient) =>
-            <li key={ingredient}> {ingredient}</li>
-        )
+    const [recipeShown, setRecipeShown] = React.useState(false)
 
     //This function has same functionality as the function below 
     //But it is provided as value to onSubmit attribue in the form element
@@ -25,6 +24,10 @@ export default function Main(){
         console.log(newIngredient) 
         setIngredients(prevIngredients => [...prevIngredients, newIngredient])
     }
+
+    function handleGetRecipe(){
+        setRecipeShown(!recipeShown)
+    }
     
     return(
         <main className="main-content">
@@ -39,19 +42,11 @@ export default function Main(){
                     name = "new-ingredient" />
                 <button>Add ingredient</button>
             </form>
-            {ingredients.length > 0 && <section>
-                <h2>Ingredients on hand:</h2>
-                <ul>
-                    {ingredientsListItems}
-                </ul>
-                {ingredients.length > 3 && <div className="get-recipe">
-                    <div>
-                        <h3>Ready for a recipe?</h3>
-                        <p>Generate a recipe from your list of ingredients.</p>
-                    </div>
-                    <button>Get a recipe</button>
-                </div>}
-            </section>}   
+            {ingredients.length > 0 && 
+            <IngredientsList ingredients={ingredients} handleGetRecipe={handleGetRecipe}/>}
+
+
+            {recipeShown && <ClaudeRecipe />}
         </main>
     )
 }
