@@ -1,10 +1,27 @@
 import React from "react"
 import ClaudeRecipe from "./ClaudeRecipe"
 import IngredientsList from "./IngredientsList"
+import { getRecipeFromChefClaude, getRecipeFromMistral } from "../../ai"
 
 export default function Main(){
     const [ingredients, setIngredients] = React.useState([])
-    const [recipeShown, setRecipeShown] = React.useState(false)
+    const [recipe, setRecipe] = React.useState("")
+
+    const recipeSection = React.useRef(null)
+    console.log(recipeSection)
+    React.useEffect(() => {
+        if (recipeSection.current !== null && recipe !== ""){
+            recipeSection.current.scrollIntoView({behavior: "smooth"})
+        }
+    }, [recipe])
+
+
+    async function handleGetRecipe(){
+        // response = getRecipeFromChefClaude(ingredients)
+        // console.log(response)
+        const response2 = await getRecipeFromMistral(ingredients)
+        setRecipe(response2)
+    }
 
     //This function has same functionality as the function below 
     //But it is provided as value to onSubmit attribue in the form element
@@ -24,10 +41,6 @@ export default function Main(){
         console.log(newIngredient) 
         setIngredients(prevIngredients => [...prevIngredients, newIngredient])
     }
-
-    function handleGetRecipe(){
-        setRecipeShown(!recipeShown)
-    }
     
     return(
         <main className="main-content">
@@ -43,10 +56,12 @@ export default function Main(){
                 <button>Add ingredient</button>
             </form>
             {ingredients.length > 0 && 
-            <IngredientsList ingredients={ingredients} handleGetRecipe={handleGetRecipe}/>}
+            <IngredientsList 
+            ref={recipeSection}
+            ingredients={ingredients} 
+            handleGetRecipe={handleGetRecipe}/>}
 
-
-            {recipeShown && <ClaudeRecipe />}
+            {recipe && <ClaudeRecipe recipe={recipe}/>}
         </main>
     )
 }
